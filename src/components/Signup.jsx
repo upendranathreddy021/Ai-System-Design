@@ -1,6 +1,7 @@
 import React , { useState,useEffect,useRef } from 'react';
 import { Sparkles, Shield, Eye, EyeOff, CheckCircle, ArrowRight, Clock } from 'lucide-react';
 import { CompassLogo } from './CompassLogo';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 export default function Signup(){
 const otpRefs=useRef([])
@@ -21,6 +22,7 @@ const [codeSent,setCodeSent]=useState(true)
 const [otp,setOtp]=useState(["","","","","",""])
 const [codeVerified,setCodeVerified]=useState(false)
 
+const navigate=useNavigate()
 const handleOtpChange =(index,value)=>{
 if (!/^\d*$/.test(value)) return
 
@@ -503,7 +505,7 @@ if(success){
           <p style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 500, textAlign: 'center', marginTop: '1.5rem' }}>
             Already have an account?{' '}
             <button
-              onClick={() => setActiveScreen('login')}
+              onClick={() => navigate("/login")}
               style={{ color: '#4f46e5', fontWeight: 700 }}
             >
               Log In

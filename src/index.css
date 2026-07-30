@@ -67,19 +67,19 @@ a:hover {
 
 .neu-raised {
   background: var(--neu-bg);
-  box-shadow: 8px 8px 16px var(--neu-shadow-dark), -8px -8px 16px var(--neu-shadow-light);
+  box-shadow: 2px 2px 16px var(--neu-shadow-dark), -2px -2px 16px var(--neu-shadow-light);
   border-radius: 20px;
 }
 
 .neu-raised-sm {
   background: var(--neu-bg);
-  box-shadow: 6px 6px 12px var(--neu-shadow-dark), -6px -6px 12px var(--neu-shadow-light);
+  box-shadow: 3px 3px 12px var(--neu-shadow-dark), -3px -3px 12px var(--neu-shadow-light);
   border-radius: 14px;
 }
 
 .neu-raised-lg {
   background: var(--neu-bg);
-  box-shadow: 12px 12px 24px rgba(163, 177, 198, 0.65), -12px -12px 24px rgba(255, 255, 255, 0.9);
+  box-shadow: 4px 4px 24px rgba(163, 177, 198, 0.65), -4px -4px 24px rgba(255, 255, 255, 0.9);
   border-radius: 24px;
 }
 
