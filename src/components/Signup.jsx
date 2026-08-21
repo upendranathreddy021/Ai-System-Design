@@ -3,16 +3,20 @@ import { Sparkles, Shield, Eye, EyeOff, CheckCircle, ArrowRight, Clock } from 'l
 import { CompassLogo } from './CompassLogo';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { APIS } from '../constant';
+import UserService from '../services/UserService';
+import toast from 'react-hot-toast';
 export default function Signup(){
 const otpRefs=useRef([])
 
-  const { signup, sendCode, verifyEmailCode, setActiveScreen, authState, addToast } = useAuth();
+
+  const { authState } = useAuth();
 const [password,setPassword]=useState("")
-  const [confirmPassword, setConfirmPassword] = useState('SecurePass123!');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword , setShowConfirmPassword] = useState(false);
-const [firstName,setFirstName]=useState("Jhon")
-const [lastName,setLastName]=useState("Doe")
+const [firstName,setFirstName]=useState("")
+const [lastName,setLastName]=useState("")
 const [workEmail,setWorkEmail]=useState("")
 const [errors,setErrors]=useState({})
   const [agreeToTerms, setAgreeToTerms] = useState(true);
@@ -63,13 +67,28 @@ const handleVerifyOtp = async()=>{
 const fullotp=otp.join('')
 if(fullotp.length<6){
     setErrors((prev)=>({...prev,otp:'Please enter all 6 digits of the verification code.'}))
-    return
+    toast.error("Please enter all 6 digits of the verification code.");
+    return;
 }
 setErrors((prev)=>({...prev,otp:undefined}))
-const success=await verifyEmailCode(fullotp)
-if(success){
-    setCodeVerified(success)
+if(workEmail && fullotp){
+  try{
+const res=await UserService.postMethod(APIS.SIGNUP.VERIFY_OTP,{"email":workEmail,"otp":fullotp})
+if(res.verified){
+    setCodeVerified(true)
+    toast.success("OTP Verified Successfully.");
+}else{
+  setCodeVerified(false);
+
+  toast.error("Failed to Verify OTP");
 }
+  }catch(err){
+    toast.error(err.message)
+  }
+}else{
+  toast.error("Please Enter Email and OTP");
+}
+
 
 }
 
@@ -111,23 +130,52 @@ if(success){
     e.preventDefault();
     if (!validateForm()) return;
 
-    await signup({
-      firstName,
-      lastName,
-      email: workEmail,
+
+    try{
+    const res=await UserService.postMethod(APIS.SIGNUP.CREATE_ACCOUNT,{
+     "firstName": firstName,
+      "lastName":lastName,
+      "email": workEmail,
+      "password":password
     });
+    toast.success(res.message);
+    navigate("/login");
+  }catch(err){
+    toast.error(err.message || "Failed to create Acount")
+  }
   };
 
     async function handleSendEmailCode (){
   if (!workEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(workEmail)) {
       setErrors((prev) => ({ ...prev, workEmail: 'Please enter a valid work email address.' }));
+      toast.error('Please enter a valid work email address.')
       return;
     }
-      setErrors((prev) => ({ ...prev, workEmail: undefined }));
-    await sendCode(workEmail);
+    console.log(workEmail,"test")
+
+    try{
+      const res=await UserService.postMethod(APIS.SIGNUP.SEND_OTP,{"email":workEmail});
+      toast.success(res?.message + ". Expires In 1 Hour");
     setCodeSent(true);
+      
     setResendTimer(42);
     setTimerActive(true);
+      setErrors((prev) => ({ ...prev, workEmail: undefined }));
+
+    }catch(err){
+      toast.error(err?.message)
+
+      console.log(err.message,"total err",err)
+    setCodeSent(false);
+    setResendTimer(0);
+    setTimerActive(false);
+      // setErrors((prev) => ({ ...prev, workEmail: undefined }));
+
+
+
+    }
+
+    // await sendCode(workEmail);
 
     }
 
@@ -306,7 +354,7 @@ if(success){
                   {codeVerified ? 'Verified ✓' : 'Confirm'}
                 </button>
 
-                <button
+                {/* <button
                   type="button"
                   disabled={timerActive}
                   onClick={() => {
@@ -323,7 +371,7 @@ if(success){
                   }}
                 >
                   Resend Code
-                </button>
+                </button> */}
               </div>
               {errors.otp && <p className="error-msg">{errors.otp}</p>}
             </div>

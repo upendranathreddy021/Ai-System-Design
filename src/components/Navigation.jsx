@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { CompassLogo } from './CompassLogo';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useLocation } from 'react-router-dom';
+import toast from '../utils/toast';
 import {
   LayoutDashboard,
   User,
   LogOut,
-  Cpu,
+  LogIn,UserLock,
   Layers,
   ShieldAlert,
   Menu,
@@ -16,8 +17,9 @@ import {
 } from 'lucide-react';
 
 export const Navigation = () => {
+  const location=useLocation();
   const navigate=useNavigate()
-  const { authState, logout, activeScreen, setActiveScreen, addToast } = useAuth();
+  const { authState, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
@@ -25,10 +27,12 @@ export const Navigation = () => {
     { id: 'profile', label: 'Profile & Settings', icon: User },
   ];
 
+ const isLogin=JSON.parse(localStorage.getItem("sd_user"))?.isAuthenticated==true ? true :false;
+ console.log(isLogin)
   const secondaryNav = [
-    { id: 'microservices', label: 'Neural Mesh Nodes', icon: Cpu, badge: '9 Active' },
-    { id: 'schematics', label: 'Cloud Topology', icon: Layers, badge: 'v2.4' },
-    { id: 'security', label: 'SOC2 Audit Logs', icon: ShieldAlert, badge: 'Passed' },
+    { id: 'microservices', label: 'Login', icon: LogIn, link:"/login" },
+    { id: 'schematics', label: 'Signup', icon: UserLock,link:"/signup" },
+    // { id: 'security', label: 'SOC2 Audit Logs', icon: ShieldAlert, badge: 'Passed' },
   ];
 
   return (
@@ -39,7 +43,7 @@ export const Navigation = () => {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <button
-            onClick={() => addToast('No unread notifications.', 'info')}
+            onClick={() => toast.info('No unread notifications.', 'info')}
             className="neu-button"
             style={{ padding: '0.5rem', color: '#475569' }}
           >
@@ -58,6 +62,7 @@ export const Navigation = () => {
       {/* Mobile Slide-down Menu Drawer */}
       {mobileMenuOpen && (
         <div className="mobile-drawer neu-raised">
+          {isLogin &&(
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', paddingBottom: '1rem', borderBottom: '1px solid #cbd5e1' }}>
             <div
               className="neu-button"
@@ -80,16 +85,15 @@ export const Navigation = () => {
               <p style={{ fontSize: '0.75rem', color: '#64748b' }}>{authState.user?.email}</p>
             </div>
           </div>
-
+)}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             {navItems.map((item) => {
               const Icon = item.icon;
-              const isActive = activeScreen === item.id;
+              const isActive = location.pathname.replace(/^\/+/, "") === item.id;
               return (
                 <button
                   key={item.id}
                   onClick={() => {
-                    setActiveScreen(item.id);
                     setMobileMenuOpen(false);
                     navigate("/"+item.id)
                   }}
@@ -115,7 +119,7 @@ export const Navigation = () => {
             })}
           </div>
 
-          <button
+         { isLogin && ( <button
             onClick={logout}
             className="neu-button"
             style={{
@@ -130,7 +134,7 @@ export const Navigation = () => {
           >
             <LogOut size={16} />
             <span>Sign Out Session</span>
-          </button>
+          </button>)}
         </div>
       )}
 
@@ -145,12 +149,13 @@ export const Navigation = () => {
           <p className="sidebar-nav-title">Workspace</p>
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = activeScreen === item.id;
+            const isActive = location.pathname.replace(/^\/+/, "") === item.id;
             return (
               <button
                 key={item.id}
                 onClick={
-                  () =>{ setActiveScreen(item.id);
+                  () =>{ 
+                    // setActiveScreen(item.id);
 
                   navigate("/"+item.id);
                   }
@@ -180,19 +185,21 @@ export const Navigation = () => {
         </div>
 
         {/* Secondary Services Navigation */}
+        { !isLogin && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <p className="sidebar-nav-title">System Monitoring</p>
+          {/* <p className="sidebar-nav-title">System Monitoring</p> */}
           {secondaryNav.map((item) => {
             const Icon = item.icon;
             return (
               <button
                 key={item.id}
-                onClick={() => addToast(`Switched view to ${item.label}`, 'info')}
+                onClick={() =>{ toast.info(`Switched view to ${item.label}`, 'info')
+                  navigate(item.link)              }}
                 className="sidebar-nav-item neu-button"
                 style={{ color: '#475569' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <Icon size={16} style={{ color: '#94a3b8' }} />
+                  {/* <Icon size={16} style={{ color: '#94a3b8' }} /> */}
                   <span>{item.label}</span>
                 </div>
                 <span
@@ -210,9 +217,9 @@ export const Navigation = () => {
             );
           })}
         </div>
-
+          )}
         {/* User Card & Logout Button at Bottom */}
-        <div className="user-card-footer">
+      { isLogin && ( <div className="user-card-footer">
           <div className="neu-inset" style={{ padding: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <div
               className="neu-button"
@@ -271,6 +278,7 @@ export const Navigation = () => {
             <span>Sign Out Session</span>
           </button>
         </div>
+)}
       </aside>
     </>
   );

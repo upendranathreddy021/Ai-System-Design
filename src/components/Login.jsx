@@ -3,10 +3,12 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { CompassLogo } from './CompassLogo';
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
-
+import { APIS } from '../constant';
+import UserService from '../services/UserService';
+import toast from 'react-hot-toast';
 export default function Login(){
 
-  const { login, setActiveScreen, authState, addToast } = useAuth();
+  const { loginSuccess, authState } = useAuth();
 
   const [errors,setErrors]=useState({})
 
@@ -42,12 +44,23 @@ const validateData=()=>{
   async function handleSubmit(e){
 e.preventDefault()
 if(!validateData()) return
+let url=APIS.SIGNUP.LOGIN;
+try{
+const res=await UserService.postMethod(url,{"email":email,"password":password})
+if(res?.success){
+  toast.success("Login Successfull");
+  loginSuccess(res?.data,true)
+  navigate("/dashboard");
 
-const res=await login(email,password,keepLoggedIn)
-if(!res.success && res.error){
+}else{
   setErrors((prev)=>({...prev,form:res.error}))
-
+  toast.success("Invalid Login Details");
 }
+
+}catch(err){
+toast.error(err?.message);
+}
+
   }
 
 const navigate = useNavigate();
