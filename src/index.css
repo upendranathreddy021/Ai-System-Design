@@ -855,3 +855,20 @@ a:hover {
     font-size: 0.8125rem;
 
 }
+
+.navigation {
+  width: 18rem;
+  opacity: 1;
+  overflow: hidden;
+  transition: width 0.8s  ease, opacity 0.8s ease;
+}
+
+.navigation.open {
+  width: 18rem;
+  opacity: 1;
+}
+
+.navigation.closed {
+  width: 0;
+  opacity: 0;
+}

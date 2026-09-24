@@ -1,10 +1,18 @@
-// components/diagram/ArchNode.jsx
 import React from 'react';
 import { Handle, Position } from 'reactflow';
-import {NODE_TYPE_CONFIG} from '../../constant';
+import { NODE_TYPE_CONFIG } from '../../constant';
+
 export default function ArchNode({ data }) {
   const config = NODE_TYPE_CONFIG[data.type] || NODE_TYPE_CONFIG.external;
   const Icon = config.icon;
+
+  const highlight = data.highlightState; // 'active' | 'failed' | 'impacted' | undefined
+
+  const ringStyle = {
+    active: { boxShadow: '0 0 0 3px #4f46e5', transform: 'scale(1.03)' },
+    failed: { boxShadow: '0 0 0 3px #ef4444', opacity: 0.6 },
+    impacted: { boxShadow: '0 0 0 3px #f59e0b' },
+  }[highlight] || {};
 
   return (
     <div
@@ -17,23 +25,19 @@ export default function ArchNode({ data }) {
         display: 'flex',
         alignItems: 'center',
         gap: '0.625rem',
+        transition: 'all 0.3s ease',
+        ...ringStyle,
       }}
     >
       <Handle type="target" position={Position.Top} style={{ opacity: 0 }} />
-      <div
-        style={{
-          width: 32, height: 32, borderRadius: '10px',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          backgroundColor: `${config.color}1a`, flexShrink: 0,
-        }}
-      >
+      <div style={{ width: 32, height: 32, borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: `${config.color}1a`, flexShrink: 0 }}>
         <Icon size={16} color={config.color} />
       </div>
       <div style={{ minWidth: 0 }}>
         <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#1e293b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {data.name}
         </div>
-        <div style={{ fontSize: '0.625rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+        <div style={{ fontSize: '0.625rem', color: '#64748b', textTransform: 'uppercase' }}>
           {data.type.replace('_', ' ')}
         </div>
       </div>

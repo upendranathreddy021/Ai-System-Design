@@ -6,6 +6,7 @@ import {
 import {
   FormControl, InputLabel, Select, MenuItem, Checkbox, ListItemText,
 } from "@mui/material";
+import toast from "../utils/toast";
 
 export default function InputData({ onGenerate, loading }) {
   const [prompt, setPrompt] = useState("");
@@ -20,6 +21,8 @@ export default function InputData({ onGenerate, loading }) {
 
   const handleSubmit = () => {
     if (!prompt.trim()) {
+        toast.error("Please enter a Prompt describing your system.");
+    
       return; // parent/toast can handle validation messaging
     }
 
@@ -118,26 +121,43 @@ export default function InputData({ onGenerate, loading }) {
         </select>
       </div>
 
-      <div className="col-12 col-md-4">
-        <FormControl fullWidth>
-          <InputLabel>Components</InputLabel>
-          <Select
-            multiple
-            value={filters.components}
-            onChange={(e) => setFilters((p) => ({ ...p, components: e.target.value }))}
-            renderValue={(selected) => selected.join(", ")}
-            label="Components"
-          >
-            {COMPONENT_MODULES.map((opt) => (
-              <MenuItem key={opt.label} value={opt.label}>
-                <Checkbox checked={filters.components.includes(opt.label)} />
-                <ListItemText primary={opt.label} />
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </div>
+<div className="col-12 col-md-4" style={{ minWidth: 0 }}>
+  <FormControl fullWidth sx={{ minWidth: 0 }}>
+    <InputLabel>Components</InputLabel>
+    <Select multiple value={filters.components}  onChange={(e) => {
+        const value = e.target.value;
+        if (value.includes("__ALL__")) {
+          const allSelected =
+            filters.components.length === COMPONENT_MODULES.length;
+          setFilters((p) => ({...p,components: allSelected ? [] : COMPONENT_MODULES.map((opt) => opt.label),}));
+          return;
+        }
+        setFilters((p) => ({...p, components: value, }));
+      }}
+      renderValue={(selected) => selected.length === 0 ? "Select components" : `${selected.length} component${selected.length > 1 ? "s" : ""} selected`
+      }
+      label="Components"
+      sx={{ width: "100%", minWidth: 0,}}
+    >
+      <MenuItem value="__ALL__">
+        <Checkbox checked={ filters.components.length === COMPONENT_MODULES.length }
+          indeterminate={ filters.components.length > 0 && filters.components.length < COMPONENT_MODULES.length }
+        />
 
+        <ListItemText
+          primary={ filters.components.length === COMPONENT_MODULES.length ? "Deselect All" : "Select All" }
+        />
+      </MenuItem>
+
+      {COMPONENT_MODULES.map((opt) => (
+        <MenuItem key={opt.label} value={opt.label}>
+          <Checkbox checked={filters.components.includes(opt.label)} />
+          <ListItemText primary={opt.label} />
+        </MenuItem>
+      ))}
+    </Select>
+  </FormControl>
+</div>
       
 
       <div className="col-12">

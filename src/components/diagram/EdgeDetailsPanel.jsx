@@ -41,6 +41,14 @@ export default function EdgeDetailsPanel({ edge, onClose }) {
           <div style={{ fontSize: '0.8rem', color: '#334155' }}>{failureBehavior}</div>
         </div>
       )}
+      {edge.exampleEvent && (
+  <div style={{ marginTop: '1rem' }}>
+    <div style={{ fontSize: '0.625rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase' }}>Example Event</div>
+    <pre className="neu-inset" style={{ fontSize: '0.7rem', padding: '0.75rem', borderRadius: '10px', marginTop: '0.3rem', overflowX: 'auto' }}>
+      {edge.exampleEvent}
+    </pre>
+  </div>
+)}
     </div>
   );
 }
