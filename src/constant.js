@@ -5,9 +5,9 @@ import {
   ExternalLink, Cuboid, Cloud,
 } from 'lucide-react';
 
-export const API_BASE_URL="https://upendranath-reddy-portfolio.onrender.com/api/system_design_ai"
-export const LOCAL_BASE_URL="https://upendranath-reddy-portfolio.onrender.com/api/system_design_ai"
-export const LOCAL_BASE_URL_PYTHON="https://chat-bot-upendra.onrender.com"
+export const API_BASE_URL="/api/system_design_ai"
+export const LOCAL_BASE_URL="/api/system_design_ai"
+export const LOCAL_BASE_URL_PYTHON=""
 export const APIS={
 
     SIGNUP:{
