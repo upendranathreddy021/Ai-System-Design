@@ -7,7 +7,7 @@ import {
 
 export const API_BASE_URL="/api/system_design_ai"
 export const LOCAL_BASE_URL="/api/system_design_ai"
-export const LOCAL_BASE_URL_PYTHON=""
+export const LOCAL_BASE_URL_PYTHON="/ai"
 export const APIS={
 
     SIGNUP:{
