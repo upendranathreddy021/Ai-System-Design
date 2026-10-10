@@ -2,10 +2,11 @@ import React ,{useState} from 'react'
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { CompassLogo } from './CompassLogo';
-import { Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, ArrowRight,ArrowLeft } from 'lucide-react';
 import { APIS } from '../constant';
 import UserService from '../services/UserService';
 import toast from 'react-hot-toast';
+import Seo from './Seo.jsx';
 export default function Login(){
 
   const { loginSuccess, authState } = useAuth();
@@ -49,6 +50,7 @@ try{
 const res=await UserService.postMethod(url,{"email":email,"password":password})
 if(res?.success){
   toast.success("Login Successfull");
+  // getUserDetails();
   loginSuccess(res?.data,true)
   navigate("/dashboard");
 
@@ -62,6 +64,23 @@ toast.error(err?.message);
 }
 
   }
+
+
+  //  async function getUserDetails(){
+  //      if(isLogin){
+  //     let url=APIS.SIGNUP.GET_USER_DETAIL;
+  //     try {
+  //       const res=await UserService.getMethod(url);
+  //       if(res){
+  //         localStorage.setItem("sd_user_details",JSON.stringify(res));
+  //       }else{
+  //         toast.error("Failed to fetch user details");
+  //       }
+  //     }catch(error){
+  //       toast.error(error?.message || "An error occurred while fetching user details");
+  //     }
+  //   }
+  //   }
 
 const navigate = useNavigate();
   const redirectSignup= () => {
@@ -80,6 +99,8 @@ const navigate = useNavigate();
 
    return (
     <div className="auth-page-container">
+      <Seo title="Log in | SystemDesign.ai" description="Log in to save and revisit your system designs." path="/login" />
+
       {/* Neumorphic Login Container Card */}
       <div
         className="neu-raised-lg auth-card"
@@ -286,27 +307,58 @@ const navigate = useNavigate();
         </p>
       </div>
 
-      {/* System Status Pill Badge */}
-      <div
-        className="neu-pill"
-        style={{ padding: '0.375rem 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '2rem' }}
-      >
-        <span
-          className="animate-pulse"
-          style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#10b981' }}
-        />
-        <span
-          style={{
-            fontSize: '0.625rem',
-            fontWeight: 800,
-            color: '#475569',
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase',
-          }}
-        >
-          SYSTEM OPERATIONAL
-        </span>
-      </div>
+     {/* Back button + System Status Pill */}
+<div
+  style={{
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+    gap: '0.75rem',
+    marginTop: '2rem',
+  }}
+>
+  <button
+    type="button"
+    onClick={() => navigate('/dashboard')}
+    className="neu-button"
+    style={{
+      padding: '0.375rem 1rem',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.5rem',
+      fontSize: '0.625rem',
+      fontWeight: 800,
+      color: '#475569',
+      letterSpacing: '0.1em',
+      textTransform: 'uppercase',
+    }}
+  >
+    <ArrowLeft size={14} />
+    <span>Back</span>
+  </button>
+
+  <div
+    className="neu-pill"
+    style={{ padding: '0.375rem 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+  >
+    <span
+      className="animate-pulse"
+      style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#10b981' }}
+    />
+    <span
+      style={{
+        fontSize: '0.625rem',
+        fontWeight: 800,
+        color: '#20539a',
+        letterSpacing: '0.1em',
+        textTransform: 'uppercase',
+      }}
+    >
+      SYSTEM OPERATIONAL
+    </span>
+  </div>
+</div>
 
       {/* Forgot Password Modal */}
       {showForgotModal && (
@@ -325,7 +377,7 @@ const navigate = useNavigate();
                   type="email"
                   value={forgotEmail}
                   onChange={(e) => setForgotEmail(e.target.value)}
-                  placeholder="alex.rivera@architect.com"
+                  placeholder=""
                   style={{ width: '100%', background: 'transparent', border: 'none', outline: 'none', fontSize: '0.75rem', color: '#1e293b' }}
                 />
               </div>

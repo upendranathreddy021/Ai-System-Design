@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { User, Shield, Bell, KeyRound, Save, CheckCircle, Mail, Lock, Building, Briefcase } from 'lucide-react';
-
+import { User, Shield, Bell, KeyRound, Save, CheckCircle, Mail, Lock, Building, Briefcase,History as HistoryIcon, Clock } from 'lucide-react';
+import {APIS} from '../constant';
+import { toast } from 'react-hot-toast';
+import UserService from '../services/UserService';
+import Seo from './Seo.jsx';
 export const ProfileSettings = () => {
   const { authState, updateProfile, addToast } = useAuth();
   const user = authState.user;
@@ -12,7 +15,6 @@ export const ProfileSettings = () => {
   const [firstName, setFirstName] = useState(user?.firstName || '');
   const [lastName, setLastName] = useState(user?.lastName || '');
   const [email, setEmail] = useState(user?.email || '');
-  const [company, setCompany] = useState(user?.company || '');
   const [role, setRole] = useState(user?.role || '');
   const [bio, setBio] = useState(user?.bio || '');
 
@@ -27,32 +29,40 @@ export const ProfileSettings = () => {
   const [emailAlerts, setEmailAlerts] = useState(true);
 
   const [errors, setErrors] = useState({});
+const [history, setHistory] = useState([]);
+const [historyLoading, setHistoryLoading] = useState(false);
+const [expandedId, setExpandedId] = useState(null);
+const parseRequest = (item) => {
+  try { return JSON.parse(item.requestJson || '{}'); } catch { return {}; }
+};
 
-  const handleSaveProfile = (e) => {
-    e.preventDefault();
-    const newErrors = {};
+const formatTime = (iso) =>
+  iso ? new Date(iso).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }) : '';
+useEffect(() => {
+    // getUserDetails();
+    // getUserHistory();
+  }, []);
+ const isLogin=JSON.parse(localStorage.getItem("sd_user"))?.isAuthenticated==true ? true :false;
+ async function  getUserHistory(){
+  if(isLogin){
+    let url=APIS.SYSTEM_DESIGN.HISTORY;
+    try {
+      const res=await UserService.getMethod(url);
+      if(res){
+         const res = await UserService.getMethod(APIS.SYSTEM_DESIGN.HISTORY);
+    const list = Array.isArray(res) ? res : (res?.data ?? []);   // works whether getMethod returns the body or the axios response
+    setHistory(list);
+      }else{
+        toast.error("Failed to fetch User History");
+      }
+    }catch (error) {
+    toast.error(error?.message || "An error occurred while fetching User History");
+  } finally {
+    setHistoryLoading(false);
+  }
+  }
 
-    if (!firstName.trim()) newErrors.firstName = 'First name cannot be empty.';
-    if (!lastName.trim()) newErrors.lastName = 'Last name cannot be empty.';
-    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = 'Please provide a valid work email address.';
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-
-    setErrors({});
-    updateProfile({
-      firstName,
-      lastName,
-      email,
-      company,
-      role,
-      bio,
-    });
-  };
+  }
 
   const handleUpdatePassword = (e) => {
     e.preventDefault();
@@ -78,8 +88,31 @@ export const ProfileSettings = () => {
     setConfirmNewPass('');
   };
 
+
+  async function getUserDetails(){
+     if(isLogin){
+    let url=APIS.SIGNUP.GET_USER_DETAIL;
+    try {
+      const res=await UserService.getMethod(url);
+      if(res){
+        setFirstName(res.firstName);
+        setLastName(res.lastName);
+        setEmail(res.email);
+        setRole(res.role == "Admin021" ? "Administrator" : "User");
+      }else{
+        toast.error("Failed to fetch user details");
+      }
+    }catch(error){
+      toast.error(error?.message || "An error occurred while fetching user details");
+    }
+  }
+  }
+
+
+
   return (
     <div className="profile-container">
+      <Seo title="Profile | SystemDesign.ai" description="Account settings" path="/profile" noindex />
       {/* Header Banner */}
       <div className="neu-raised" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -102,9 +135,9 @@ export const ProfileSettings = () => {
             <h1 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#1e293b', letterSpacing: '-0.02em' }}>
               {user?.firstName} {user?.lastName}
             </h1>
-            <p style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 500 }}>
+            {/* <p style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 500 }}>
               {user?.role} • {user?.company}
-            </p>
+            </p> */}
           </div>
         </div>
 
@@ -127,6 +160,14 @@ export const ProfileSettings = () => {
           <User size={16} />
           <span>Personal Info</span>
         </button>
+         <button
+          onClick={() => setActiveTab('history')}
+          className={`tab-btn ${activeTab === 'history' ? 'neu-button-active' : 'neu-button'}`}
+          style={{ color: activeTab === 'history' ? '#4f46e5' : '#475569' }}
+        >
+          <HistoryIcon size={16} />
+          <span>History</span>
+        </button>
 
         <button
           onClick={() => setActiveTab('security')}
@@ -145,11 +186,68 @@ export const ProfileSettings = () => {
           <Bell size={16} />
           <span>Preferences</span>
         </button>
+       
       </div>
 
       {/* Tab Content Cards */}
+      {activeTab === 'history' && (
+  <div className="neu-raised" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+    <h2 style={{ fontSize: '1rem', fontWeight: 800, color: '#1e293b', borderBottom: '1px solid rgba(203, 213, 225, 0.5)', paddingBottom: '0.75rem' }}>
+      Design History
+    </h2>
+
+    {historyLoading && <p style={{ fontSize: '0.8rem', color: '#64748b' }}>Loading history...</p>}
+
+    {!historyLoading && history.length === 0 && (
+      <p style={{ fontSize: '0.8rem', color: '#64748b' }}>No designs generated yet.</p>
+    )}
+
+    {history.map((item) => {
+      const req = parseRequest(item);
+      const open = expandedId === item.id;
+      const details = [
+        ['Architecture Style', req.architectureStyle],
+        ['Cloud Target', req.cloudTarget],
+        ['Scale Tier', req.scaleTier],
+        ['Data Store Strategy', req.dataStoreStrategy],
+        ['Language / Framework', req.languageFramework],
+        ['Component Modules', req.componentModules?.length ? req.componentModules.join(', ') : ''],
+      ];
+
+      return (
+        <div key={item.id} className="neu-inset" style={{ padding: '1rem 1.25rem', borderRadius: '1rem' }}>
+          <div
+            onClick={() => setExpandedId(open ? null : item.id)}
+            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', cursor: 'pointer' }}
+          >
+            <p style={{ fontSize: '0.875rem', fontWeight: 700, color: '#1e293b', margin: 0, minWidth: 0, wordBreak: 'break-word' }}>
+              {item.prompt}
+            </p>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.7rem', color: '#64748b', whiteSpace: 'nowrap' }}>
+              <Clock size={12} />
+              {formatTime(item.createdAt)}
+            </span>
+          </div>
+
+          {open && (
+            <div className="form-row-2" style={{ marginTop: '1rem' }}>
+              {details.map(([label, value]) => (
+                <div key={label}>
+                  <label className="form-label">{label}</label>
+                  <p style={{ fontSize: '0.8rem', color: value ? '#1e293b' : '#94a3b8', margin: 0 }}>
+                    {value || 'Not specified'}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    })}
+  </div>
+)}
       {activeTab === 'profile' && (
-        <form onSubmit={handleSaveProfile} className="neu-raised" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        <form className="neu-raised" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           <h2 style={{ fontSize: '1rem', fontWeight: 800, color: '#1e293b', borderBottom: '1px solid rgba(203, 213, 225, 0.5)', paddingBottom: '0.75rem' }}>
             Personal Details & Organization
           </h2>
@@ -159,7 +257,7 @@ export const ProfileSettings = () => {
               <label className="form-label">First Name</label>
               <div className={`neu-inset input-container ${errors.firstName ? 'neu-inset-error' : ''}`}>
                 <input
-                  type="text"
+                  type="text" readOnly
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   className="input-field"
@@ -172,7 +270,7 @@ export const ProfileSettings = () => {
               <label className="form-label">Last Name</label>
               <div className={`neu-inset input-container ${errors.lastName ? 'neu-inset-error' : ''}`}>
                 <input
-                  type="text"
+                  type="text" readOnly
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   className="input-field"
@@ -186,7 +284,7 @@ export const ProfileSettings = () => {
               <div className={`neu-inset input-container ${errors.email ? 'neu-inset-error' : ''}`}>
                 <Mail size={16} className="input-icon" />
                 <input
-                  type="email"
+                  type="email" readOnly
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="input-field"
@@ -195,24 +293,13 @@ export const ProfileSettings = () => {
               {errors.email && <p className="error-msg">{errors.email}</p>}
             </div>
 
-            <div>
-              <label className="form-label">Company / Organization</label>
-              <div className="neu-inset input-container">
-                <Building size={16} className="input-icon" />
-                <input
-                  type="text"
-                  value={company}
-                  onChange={(e) => setCompany(e.target.value)}
-                  className="input-field"
-                />
-              </div>
-            </div>
+       
 
-            <div style={{ gridColumn: '1 / -1' }}>
-              <label className="form-label">System Design Role</label>
+            <div >
+              <label className="form-label">Login Role</label>
               <div className="neu-inset input-container">
                 <Briefcase size={16} className="input-icon" />
-                <input
+                <input readOnly
                   type="text"
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
@@ -221,38 +308,7 @@ export const ProfileSettings = () => {
               </div>
             </div>
 
-            <div style={{ gridColumn: '1 / -1' }}>
-              <label className="form-label">Architect Bio</label>
-              <div className="neu-inset" style={{ padding: '0.75rem 1rem' }}>
-                <textarea
-                  rows={3}
-                  value={bio}
-                  onChange={(e) => setBio(e.target.value)}
-                  placeholder="Describe your architectural responsibilities..."
-                  style={{
-                    width: '100%',
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    color: '#1e293b',
-                    fontSize: '0.875rem',
-                    fontWeight: 500,
-                    resize: 'none',
-                  }}
-                />
-              </div>
-            </div>
-          </div>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '1rem' }}>
-            <button
-              type="submit"
-              className="neu-primary-btn"
-              style={{ padding: '0.75rem 1.5rem', fontSize: '0.75rem', gap: '0.5rem' }}
-            >
-              <Save size={16} />
-              <span>Save Changes</span>
-            </button>
           </div>
         </form>
       )}

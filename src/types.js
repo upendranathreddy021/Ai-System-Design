@@ -1,8 +1,8 @@
 export const DEMO_USER = {
   id: 'usr_89234798',
-  firstName: 'Alex',
-  lastName: 'Rivera',
-  email: 'alex.rivera@architect.com',
+  firstName: '',
+  lastName: '',
+  email: '',
   role: 'Principal System Architect',
   company: 'TechCloud Neural Labs',
   bio: 'Designing fault-tolerant microservice meshes & AI neural pipelines.',

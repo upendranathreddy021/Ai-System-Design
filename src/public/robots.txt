@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Disallow: /profile
+Sitemap:https://ai-system-design.onrender.com/sitemap.xml

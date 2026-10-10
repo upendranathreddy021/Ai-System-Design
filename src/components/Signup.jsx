@@ -1,11 +1,12 @@
 import React , { useState,useEffect,useRef } from 'react';
-import { Sparkles, Shield, Eye, EyeOff, CheckCircle, ArrowRight, Clock } from 'lucide-react';
+import { Sparkles, Shield, Eye, EyeOff, CheckCircle,ArrowLeft , ArrowRight, Clock } from 'lucide-react';
 import { CompassLogo } from './CompassLogo';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { APIS } from '../constant';
 import UserService from '../services/UserService';
 import toast from 'react-hot-toast';
+import Seo from './Seo.jsx';
 export default function Signup(){
 const otpRefs=useRef([])
 
@@ -39,6 +40,12 @@ setOtp(newOtp)
  }
 }
 
+   useEffect(() => {
+     if (!timerActive) return;
+     if (resendTimer <= 0) { setTimerActive(false); return; }
+     const t = setTimeout(() => setResendTimer((s) => s - 1), 1000);
+     return () => clearTimeout(t);
+   }, [timerActive, resendTimer]);
 
  // Password Strength Calculation
   const getPasswordStrength = (pass) => {
@@ -181,9 +188,32 @@ if(res.verified){
 
     return (
     <div className="auth-page-container">
+      <Seo title="Create account | SystemDesign.ai" description="Create a free account to save your generated architectures." path="/signup" />
       <div className="auth-signup-grid">
         {/* Left Column: Brand Hero Banner */}
         <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
+          <button
+            type="button"
+            onClick={() => navigate('/dashboard')}
+            className="neu-button"
+            style={{
+              alignSelf: 'flex-start',
+              padding: '0.375rem 1rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              marginBottom: '1.25rem',
+              fontSize: '0.625rem',
+              fontWeight: 800,
+              color: '#475569',
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+            }}
+          >
+            <ArrowLeft size={14} />
+            <span>Back</span>
+          </button>
+
           <CompassLogo size="lg" style={{ marginBottom: '1.5rem' }} />
 
           <h1 className="auth-hero-title">
@@ -192,9 +222,8 @@ if(res.verified){
           </h1>
 
           <p className="auth-hero-subtitle">
-            Join over 10,000 system architects using our soft-tech interface to model complex
-            neural deployments and cloud infrastructures.
-          </p>
+          Join for a smarter way to design systems: describe your idea, get an interactive architecture, and understand every decision behind it.
+        </p>
 
           {/* Soft Raised Feature Tags */}
           <div className="auth-tags-grid">
@@ -244,7 +273,7 @@ if(res.verified){
                       setFirstName(e.target.value);
                       if (errors.firstName) setErrors((prev) => ({ ...prev, firstName: undefined }));
                     }}
-                    placeholder="Alex"
+                    placeholder=""
                     className="input-field"
                   />
                 </div>
@@ -261,7 +290,7 @@ if(res.verified){
                       setLastName(e.target.value);
                       if (errors.lastName) setErrors((prev) => ({ ...prev, lastName: undefined }));
                     }}
-                    placeholder="Rivera"
+                    placeholder=""
                     className="input-field"
                   />
                 </div>
@@ -283,7 +312,7 @@ if(res.verified){
                     setWorkEmail(e.target.value);
                     if (errors.workEmail) setErrors((prev) => ({ ...prev, workEmail: undefined }));
                   }}
-                  placeholder="alex.rivera@architect.com"
+                  placeholder=""
                   className="input-field"
                 />
                 <button

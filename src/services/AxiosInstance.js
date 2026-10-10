@@ -9,7 +9,7 @@ const AxiosInstance=axios.create({
 })
 
 AxiosInstance.interceptors.request.use((config)=>{
-    const token=sessionStorage.getItem("ticket");
+    const token=localStorage.getItem("sd_token");
     if(token){
         config.headers.Authorization=`Bearer ${token}`;
     }

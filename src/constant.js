@@ -6,7 +6,8 @@ import {
 } from 'lucide-react';
 
 export const API_BASE_URL="/api/system_design_ai"
-export const LOCAL_BASE_URL="/api/system_design_ai"
+export const LOCAL_URL="http://34.229.58.97/"
+export const LOCAL_BASE_URL=LOCAL_URL+"/api/system_design_ai"
 export const LOCAL_BASE_URL_PYTHON="/ai"
 export const APIS={
 
@@ -14,11 +15,15 @@ export const APIS={
         VERIFY_OTP:`${LOCAL_BASE_URL}/auth/verifyCode`, //post
         SEND_OTP:`${LOCAL_BASE_URL}/auth/sendCode`,  //post
         CREATE_ACCOUNT:`${LOCAL_BASE_URL}/auth/complete-registration`,  //post
-        LOGIN:`${LOCAL_BASE_URL}/auth/login`
+        LOGIN:`${LOCAL_BASE_URL}/auth/login`,
+
+      GET_USER_DETAIL:`${LOCAL_BASE_URL}/system_design_ai/getUserDetails`,  //get
 
     },
     SYSTEM_DESIGN:{
-      GENERATE:`${LOCAL_BASE_URL_PYTHON}/system-design/generate`,  //post
+      GENERATE:`${LOCAL_BASE_URL}/generate`,  //post
+      HISTORY:`${LOCAL_BASE_URL}/history`,  //get
+      CHATBOT:`${LOCAL_BASE_URL_PYTHON}/ask`  //post
     }
 
 }

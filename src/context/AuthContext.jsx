@@ -15,6 +15,11 @@ export const AuthProvider = ({ children }) => {
           isAuthenticated: true,
           token: savedToken,
           loading: false,
+          firstName: JSON.parse(savedUser).firstName,
+          lastName: JSON.parse(savedUser).lastName,
+          role: JSON.parse(savedUser).role,
+          verified: JSON.parse(savedUser).verified,
+          active: JSON.parse(savedUser).active
         };
       } catch (e) {
         console.error('Failed to parse saved user', e);
@@ -25,6 +30,11 @@ export const AuthProvider = ({ children }) => {
       isAuthenticated: false,
       token: null,
       loading: false,
+        firstName:null,
+      lastName:null,
+      role:null,
+      verified:null,
+      active:null
     };
   });
 
@@ -38,9 +48,19 @@ export const AuthProvider = ({ children }) => {
 
 
   const loginSuccess=(data,keepLoggedIn=true)=>{
-    const user={"email":data.email,"role":data.role,"isAuthenticated":true}
+    const user={"email":data.email,"role":data.role,"isAuthenticated":true,
+      "firstName":data.firstName,"lastName":data.lastName,
+      "role":data.role == "Admin021" ? "Administrator" : "User",
+      "keepLoggedIn": keepLoggedIn,"verified":data.verified,"active":data.active
+
+    }
       setAuthState({user,isAuthenticated: true,
       token: data.token,
+      firstName:data.firstName,
+      lastName:data.lastName,
+      role:data.role == "Admin021" ? "Administrator" : "User",
+      verified:data.verified,
+      active:data.active,
       loading: false})
 
       const storage=keepLoggedIn ? localStorage : sessionStorage;
@@ -55,10 +75,17 @@ export const AuthProvider = ({ children }) => {
       isAuthenticated: false,
       token: null,
       loading: false,
+      firstName:null,
+      lastName:null,
+      role:null,
+      verified:null,
+      active:null
     });
     
     localStorage.removeItem('sd_token');
     localStorage.removeItem('sd_user');
+    localStorage.removeItem('sd_user_details');
+    sessionStorage.removeItem('sd_user_details');
     sessionStorage.removeItem('sd_token');
     sessionStorage.removeItem('sd_user');
     navigate("/dashboard")
