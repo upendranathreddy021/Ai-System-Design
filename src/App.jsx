@@ -12,7 +12,7 @@ import {useLocation} from 'react-router-dom';
 import {APIS} from './constant';
 import UserService from './services/UserService';
 import {toast} from 'react-hot-toast';
-
+import ChatBot from './components/ChatBot';
 const MainContent=()=>{
   const location=useLocation();
  const isLogin=JSON.parse(localStorage.getItem("sd_user"))?.isAuthenticated==true ? true :false;
@@ -54,6 +54,7 @@ const isDisplay = location.pathname !== "/login" && location.pathname !== "/sign
 
       <main className="main-content-area">
         <AppRoutes />
+        <ChatBot />
       </main>
     </div>
   )

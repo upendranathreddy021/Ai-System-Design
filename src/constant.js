@@ -24,7 +24,10 @@ export const APIS={
       GENERATE:`${LOCAL_BASE_URL}/generate`,  //post
       HISTORY:`${LOCAL_BASE_URL}/history`,  //get
       CHATBOT:`${LOCAL_BASE_URL_PYTHON}/ask`  //post
-    }
+    },
+    CHATBOT: {
+      ASK:  LOCAL_URL+'ai/ask',
+},
 
 }
 // Global Application Types & Constants
