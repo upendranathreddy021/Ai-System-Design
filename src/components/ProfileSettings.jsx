@@ -40,7 +40,7 @@ const formatTime = (iso) =>
   iso ? new Date(iso).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }) : '';
 useEffect(() => {
     // getUserDetails();
-    // getUserHistory();
+    getUserHistory();
   }, []);
  const isLogin=JSON.parse(localStorage.getItem("sd_user"))?.isAuthenticated==true ? true :false;
  async function  getUserHistory(){
