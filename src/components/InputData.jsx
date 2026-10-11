@@ -58,7 +58,7 @@ export default function InputData({ onGenerate, loading }) {
           onChange={(e) => setFilters((p) => ({ ...p, architectureStyle: e.target.value }))}
           className="neu-inset input-field InputDataClass"
         >
-          <option value="" disabled>Select...</option>
+          <option value="" >Select...</option>
           {ARCHITECTURE_STYLES.map((opt) => (
             <option key={opt.label} value={opt.label}>{opt.label}</option>
           ))}
@@ -72,7 +72,7 @@ export default function InputData({ onGenerate, loading }) {
           onChange={(e) => setFilters((p) => ({ ...p, cloudTarget: e.target.value }))}
           className="neu-inset input-field InputDataClass"
         >
-          <option value="" disabled>Select...</option>
+          <option value="" >Select...</option>
           {CLOUD_TARGETS.map((opt) => (
             <option key={opt.label} value={opt.label}>{opt.label}</option>
           ))}
@@ -86,7 +86,7 @@ export default function InputData({ onGenerate, loading }) {
           onChange={(e) => setFilters((p) => ({ ...p, scaleTier: e.target.value }))}
           className="neu-inset input-field InputDataClass"
         >
-          <option value="" disabled>Select...</option>
+          <option value="" >Select...</option>
           {SCALE_TIERS.map((opt) => (
             <option key={opt.label} value={opt.label}>{opt.label}</option>
           ))}
@@ -100,7 +100,7 @@ export default function InputData({ onGenerate, loading }) {
           onChange={(e) => setFilters((p) => ({ ...p, dataStoreType: e.target.value }))}
           className="neu-inset input-field InputDataClass"
         >
-          <option value="" disabled>Select...</option>
+          <option value="" >Select...</option>
           {DATA_STORE_STRATEGIES.map((opt) => (
             <option key={opt.label} value={opt.label}>{opt.label}</option>
           ))}
