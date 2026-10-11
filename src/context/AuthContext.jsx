@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState } from 'react';
 import { DEMO_USER } from '../types.js';
 import { useNavigate } from 'react-router-dom';
+import {toast} from 'react-hot-toast';
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -88,6 +90,7 @@ export const AuthProvider = ({ children }) => {
     sessionStorage.removeItem('sd_user_details');
     sessionStorage.removeItem('sd_token');
     sessionStorage.removeItem('sd_user');
+     toast.success("Logged out successfully. Redirecting to dashboard...");
     navigate("/dashboard")
   };
 
