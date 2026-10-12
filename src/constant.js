@@ -7,7 +7,7 @@ import {
 
 export const API_BASE_URL="/api/system_design_ai"
 export const LOCAL_URL="https://upendranath-reddy-portfolio.onrender.com"
-export const LOCAL_BASE_URL=LOCAL_URL+""
+export const LOCAL_BASE_URL=LOCAL_URL+"/api/system_design_ai"
 export const LOCAL_BASE_URL_PYTHON="https://chat-bot-upendra.onrender.com"
 export const APIS={
 
