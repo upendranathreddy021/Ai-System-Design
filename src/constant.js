@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 
 export const API_BASE_URL="/api/system_design_ai"
-export const LOCAL_URL="http://34.229.58.97"
+export const LOCAL_URL="https://system-design-ai.duckdns.org"
 export const LOCAL_BASE_URL=LOCAL_URL+"/api/system_design_ai"
 export const LOCAL_BASE_URL_PYTHON="/ai"
 export const APIS={
